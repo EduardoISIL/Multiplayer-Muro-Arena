@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundlayer;
 
+    Vector3 posSaved;
     private void Awake()
     {
         rgbd2D = GetComponent<Rigidbody2D>();
@@ -29,6 +30,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
         if (GameObject.Find("Player 1")) _transform.name = "Player 2";
         else if (GameObject.Find("Player(Clone)")) _transform.name = "Player 1";
 
+        posSaved = GameObject.Find("SpawnPosition").transform.position;
+
     }
     void Update()
     {
@@ -36,7 +39,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             if(Input.GetKeyDown(KeyCode.Space))
             {
-                print("Espacio");
                 if(isGrounded) Jumping(); //
             }
             float X = Input.GetAxisRaw("Horizontal");
@@ -50,6 +52,34 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public void Jumping()
     {
         rgbd2D.velocity = Vector2.up * Jump;
+    }
+    public void SavePosition(Vector3 thisPos)
+    {
+        posSaved = thisPos;
+    }
+
+    public void UpdatePosition()
+    {
+        this.transform.position = posSaved;
+    }
+
+    private void FixedUpdate() // handle physics stuff here
+    {
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundlayer);
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Platform")
+        {
+            this.transform.parent = collision.transform;
+        }
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Platform")
+        {
+            this.transform.parent = null;
+        }
     }
 }
 
