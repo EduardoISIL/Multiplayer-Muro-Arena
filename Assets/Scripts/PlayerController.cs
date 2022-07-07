@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [SerializeField] private LayerMask groundlayer;
 
     //new
-    private TextMeshProUGUI txtScore;
+    [SerializeField] private TextMeshProUGUI txtScore;
     int playerScore = 0;
 
     Vector3 posSaved;
@@ -31,7 +31,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        txtScore = GameObject.Find("txt Score").GetComponent<TextMeshProUGUI>();
+        var lista_textos = FindObjectsOfType<TextMeshProUGUI>();
+        txtScore = lista_textos[0];
+
+        //txtScore = GameObject.Find("txt Score").GetComponent<TextMeshProUGUI>();
         txtScore.text = " x" + playerScore;
 
         _transform = GetComponent<Transform>();
@@ -82,24 +85,23 @@ public class PlayerController : MonoBehaviourPunCallbacks
             this.transform.parent = collision.transform;
         }
 
+        if (collision.gameObject.tag == "Coin")
+        {
+            if (photonView.IsMine)
+            {
+                playerScore++;
+                txtScore.text = " x" + playerScore;
+
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlaySound(1);
+                Destroy(collision.gameObject);
+            }
+        }
     }
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Platform")
         {
             this.transform.parent = null;
-        }
-    }
-    public void OnTriggerEnter2D(Collider2D collider)
-    {
-        if (collider.tag == "Coin")
-        {
-            //1 es el index de coin
-            playerScore++;
-            txtScore.text = " x" + playerScore;
-
-            GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlaySound(1);
-            Destroy(collider.gameObject);
         }
     }
 }
