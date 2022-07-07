@@ -7,6 +7,7 @@ TagManager:
   - Wall
   - Platform
   - Coin
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
