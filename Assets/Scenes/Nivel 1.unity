@@ -185,52 +185,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8523396025423361651, guid: 96067eb1a91e5484ba1f0afb13d5865b, type: 3}
   m_PrefabInstance: {fileID: 177874483}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &183573802
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 183573804}
-  - component: {fileID: 183573803}
-  m_Layer: 0
-  m_Name: Launcher
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &183573803
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 183573802}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5fca26a02ab4f141bd2578dcd1cc069, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerPref1: {fileID: 5668493359505082642, guid: b8896a24a7aa1d246a96abe69d2e76c7, type: 3}
-  cam: {fileID: 519420030}
-  SpawnDefault: {fileID: 1835327475}
---- !u!4 &183573804
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 183573802}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 307768777}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &198837303
 GameObject:
   m_ObjectHideFlags: 0
@@ -294,7 +248,6 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 183573804}
   - {fileID: 1835327475}
   - {fileID: 489475878}
   m_Father: {fileID: 0}
@@ -569,7 +522,6 @@ MonoBehaviour:
   checkPointSound: {fileID: 8300000, guid: 16917c163e734a141bc8192775b9533f, type: 3}
   sawSound: {fileID: 8300000, guid: b03f1dad4eb23114e83977a733e513a7, type: 3}
   tuParlante: {fileID: 489475879}
-  txtScore: {fileID: 510539130}
 --- !u!4 &489475878
 Transform:
   m_ObjectHideFlags: 0
@@ -582,7 +534,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 307768777}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &489475879
 AudioSource:
@@ -8172,7 +8124,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 307768777}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1842166960
 GameObject:

@@ -42,6 +42,15 @@ public class Launcher : MonoBehaviourPunCallbacks
         {
             playerEdit = GameObject.Find("PlayerEdit").GetComponent<SpriteRenderer>();
         }
+
+        if (SceneManager.GetActiveScene().name == "2")
+        {
+            print("Se detecto la escena");
+            playerPref1 = GameObject.Find("MC 2").GetComponent<PhotonView>();
+            cam = GameObject.Find("Main Camera").GetComponent<CameraFollower>();
+            SpawnDefault = GameObject.Find("SpawnPosition").GetComponent<Transform>();
+            PhotonNetwork.JoinRandomOrCreateRoom();
+        }
     }
 
     public override void OnConnectedToMaster()
@@ -60,7 +69,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public void StartGame()
     {
-        PhotonNetwork.JoinRandomOrCreateRoom();
         SceneManager.LoadScene(2);
     }
 
