@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using TMPro;
 
 public class PlayerController : MonoBehaviourPunCallbacks
 {
@@ -17,6 +18,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundlayer;
 
+    //new
+    private TextMeshProUGUI txtScore;
+    int playerScore = 0;
+
     Vector3 posSaved;
     private void Awake()
     {
@@ -26,6 +31,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+        txtScore = GameObject.Find("txt Score").GetComponent<TextMeshProUGUI>();
+        txtScore.text = " x" + playerScore;
+
         _transform = GetComponent<Transform>();
         if (GameObject.Find("Player 1")) _transform.name = "Player 2";
         else if (GameObject.Find("Player(Clone)")) _transform.name = "Player 1";
@@ -73,12 +81,25 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             this.transform.parent = collision.transform;
         }
+
     }
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Platform")
         {
             this.transform.parent = null;
+        }
+    }
+    public void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (collider.tag == "Coin")
+        {
+            //1 es el index de coin
+            playerScore++;
+            txtScore.text = " x" + playerScore;
+
+            GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlaySound(1);
+            Destroy(collider.gameObject);
         }
     }
 }

@@ -11,12 +11,12 @@ public class GameController : MonoBehaviour
 
     [SerializeField] private AudioSource tuParlante;
 
-    [SerializeField] private TextMeshProUGUI txtScore;
-    int playerScore = 0;
+    //[SerializeField] private TextMeshProUGUI txtScore;
+    //int playerScore = 0;
     // Start is called before the first frame update
     void Start()
     {
-        txtScore.text = " x" + playerScore;
+        //txtScore.text = " x" + playerScore;
     }
     public void PlaySound(int index)
     {
@@ -34,9 +34,9 @@ public class GameController : MonoBehaviour
 
         }
     }
-    public void UpdateScore()
-    {
-        playerScore++;
-        txtScore.text = " x" + playerScore;
-    }
+    //public void UpdateScore()
+    //{
+    //    playerScore++;
+    //    txtScore.text = " x" + playerScore;
+    //}
 }
