@@ -64,37 +64,36 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         rgbd2D.velocity = Vector2.up * Jump;
     }
-    public void SavePosition(Vector3 thisPos)
-    {
-        posSaved = thisPos;
-    }
-
-    public void UpdatePosition()
-    {
-        this.transform.position = posSaved;
-    }
-
     private void FixedUpdate() // handle physics stuff here
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundlayer);
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Platform")
-        {
-            this.transform.parent = collision.transform;
-        }
-
         if (collision.gameObject.tag == "Coin")
         {
             if (photonView.IsMine)
             {
                 playerScore++;
                 txtScore.text = " x" + playerScore;
-
                 GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlaySound(1);
-                Destroy(collision.gameObject);
             }
+            Destroy(collision.gameObject);
+        }
+
+        if (collision.gameObject.tag == "Coin")
+        {
+            if (photonView.IsMine)
+            {
+                print("Pos saved: " + this.transform.position);
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlaySound(2);
+                this.SavePosition(this.transform.position);
+            }
+        }
+
+        if (collision.gameObject.tag == "Platform")
+        {
+            this.transform.parent = collision.transform;
         }
     }
     private void OnCollisionExit2D(Collision2D collision)
@@ -103,6 +102,14 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             this.transform.parent = null;
         }
+    }
+    public void SavePosition(Vector3 thisPos)
+    {
+        posSaved = thisPos;
+    }
+    public void UpdatePosition()
+    {
+        this.transform.position = posSaved;
     }
 }
 

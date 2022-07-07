@@ -264,6 +264,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1797479082}
     m_Modifications:
+    - target: {fileID: -7024837568987828069, guid: 07a135940bf230d40918b3bf60668507, type: 3}
+      propertyPath: sceneViewId
+      value: 19
+      objectReference: {fileID: 0}
+    - target: {fileID: -7024837568987828069, guid: 07a135940bf230d40918b3bf60668507, type: 3}
+      propertyPath: ObservedComponents.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8961171222454504818, guid: 07a135940bf230d40918b3bf60668507, type: 3}
       propertyPath: m_Name
       value: CheckPoint (1)
@@ -11740,6 +11748,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1797479082}
     m_Modifications:
+    - target: {fileID: -7024837568987828069, guid: 07a135940bf230d40918b3bf60668507, type: 3}
+      propertyPath: sceneViewId
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: -7024837568987828069, guid: 07a135940bf230d40918b3bf60668507, type: 3}
+      propertyPath: ObservedComponents.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8961171222454504818, guid: 07a135940bf230d40918b3bf60668507, type: 3}
       propertyPath: m_Name
       value: CheckPoint
