@@ -18,12 +18,30 @@ public class Launcher : MonoBehaviourPunCallbacks
     private int skinsCount = 0;
     // Start is called before the first frame update
 
+    public static Launcher launcherStatic;//comparte esta variable con todas las escenas
+
+    private void Awake()
+    {
+        if (launcherStatic != null && launcherStatic != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        launcherStatic = this;
+        DontDestroyOnLoad(this);
+    }
+
     void Start()
     {
         PhotonNetwork.ConnectUsingSettings();
         skinsCount = playerSkins.Length;
         tempValue = 0;
         print(tempValue);
+
+        if (GameObject.Find("PlayerEdit") != null)
+        {
+            playerEdit = GameObject.Find("PlayerEdit").GetComponent<SpriteRenderer>();
+        }
     }
 
     public override void OnConnectedToMaster()
@@ -64,7 +82,27 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-            playerEdit.sprite = playerSkins[tempValue];
+        if (GameObject.Find("PlayerEdit") != null)
+        {
+            playerEdit = GameObject.Find("PlayerEdit").GetComponent<SpriteRenderer>();
+        }
+
+        if (playerEdit != null) playerEdit.sprite = playerSkins[tempValue];
+
+        if (GameObject.Find("Left") != null)
+        {
+            GameObject.Find("Left").GetComponent<Button>().onClick.AddListener(LeftSkin);
+        }
+
+        if (GameObject.Find("Right") != null)
+        {
+            GameObject.Find("Right").GetComponent<Button>().onClick.AddListener(RightSkin);
+        }
+
+        if (GameObject.Find("StartBtn") != null)
+        {
+            GameObject.Find("StartBtn").GetComponent<Button>().onClick.AddListener(StartGame);
+        }
     }
 
     public void RightSkin()
@@ -72,7 +110,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         if (tempValue < skinsCount - 1)
         {
             tempValue++;
-        print(tempValue);
+            print(tempValue);
         }
     }
 

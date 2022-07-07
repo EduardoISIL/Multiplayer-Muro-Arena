@@ -324,6 +324,10 @@ MonoBehaviour:
   cam: {fileID: 0}
   SpawnDefault: {fileID: 0}
   loadingPnl: {fileID: 1592174565}
+  playerSkins:
+  - {fileID: 21300000, guid: 859fb0716d58fb945900e87d02c6d1a6, type: 3}
+  - {fileID: 21300000, guid: 0bb9a9cdbc273b546a1480dfdd8991eb, type: 3}
+  playerEdit: {fileID: 0}
 --- !u!1 &180564779
 GameObject:
   m_ObjectHideFlags: 0
