@@ -17,11 +17,16 @@ public class PlayerController : MonoBehaviourPunCallbacks
     bool isGrounded;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundlayer;
+    int canMove = 1;
 
     //new
-    [SerializeField] private TextMeshProUGUI txtScore;
+    private TextMeshProUGUI txtScore;
     int playerScore = 0;
 
+    private TextMeshProUGUI txtResultGame;
+    private GameObject imgResult;
+
+    //Position
     Vector3 posSaved;
     private void Awake()
     {
@@ -31,11 +36,17 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        var lista_textos = FindObjectsOfType<TextMeshProUGUI>();
-        txtScore = lista_textos[0];
-
         //txtScore = GameObject.Find("txt Score").GetComponent<TextMeshProUGUI>();
+        var lista_textos = FindObjectsOfType<TextMeshProUGUI>();
+        txtScore = lista_textos[1];
         txtScore.text = " x" + playerScore;
+
+        txtResultGame = lista_textos[2];
+        txtResultGame.text = "";
+        imgResult = txtResultGame.transform.parent.gameObject;
+        imgResult.SetActive(false);
+
+        
 
         _transform = GetComponent<Transform>();
         if (GameObject.Find("Player 1")) _transform.name = "Player 2";
@@ -43,6 +54,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         posSaved = GameObject.Find("SpawnPosition").transform.position;
 
+        PhotonNetwork.LocalPlayer.NickName = "Player " + PhotonNetwork.LocalPlayer.ActorNumber;
+        this.transform.name = "Player " + PhotonNetwork.LocalPlayer.ActorNumber;
     }
     void Update()
     {
@@ -56,7 +69,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
             float Y = Input.GetAxisRaw("Vertical");
 
             Vector3 mov = _transform.right * X + _transform.forward * Y;
-            _transform.position += mov * Speed * Time.deltaTime;
+            _transform.position += mov * Speed * Time.deltaTime * canMove; //si termino el juego, canMove se vuelve 0
         }
 
     }
@@ -74,23 +87,32 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             if (photonView.IsMine)
             {
-                playerScore++;
-                txtScore.text = " x" + playerScore;
+                playerScore +=1;
+                txtScore.text = " x " + playerScore;
                 GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlaySound(1);
             }
             Destroy(collision.gameObject);
         }
 
-        if (collision.gameObject.tag == "Coin")
+        if (collision.gameObject.tag == "Checkpoint")
         {
             if (photonView.IsMine)
             {
-                print("Pos saved: " + this.transform.position);
                 GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlaySound(2);
                 this.SavePosition(this.transform.position);
             }
         }
-
+        if (collision.gameObject.tag == "End")
+        {
+            if (photonView.IsMine)
+            {
+                playerScore += 5;
+                txtScore.text = " x " + playerScore;
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlaySound(3);
+                GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().End(playerScore, PhotonNetwork.LocalPlayer.NickName);
+            }
+            Destroy(collision.gameObject);
+        }
         if (collision.gameObject.tag == "Platform")
         {
             this.transform.parent = collision.transform;
@@ -105,11 +127,31 @@ public class PlayerController : MonoBehaviourPunCallbacks
     }
     public void SavePosition(Vector3 thisPos)
     {
+        print("Se activo el SavePosition");
         posSaved = thisPos;
     }
     public void UpdatePosition()
     {
         this.transform.position = posSaved;
+    }
+    public void StopMoving()
+    {
+        canMove = 0;
+    }
+    public void PlayerWON()
+    {
+        imgResult.SetActive(true);
+        txtResultGame.text = "Congratulations you WON!";
+    }
+    public void PlayerLOSE()
+    {
+        imgResult.SetActive(true);
+        txtResultGame.text = "Eliminated";
+    }
+    public void PlayerTIE()
+    {
+        imgResult.SetActive(true);
+        txtResultGame.text = "Tie!";
     }
 }
 

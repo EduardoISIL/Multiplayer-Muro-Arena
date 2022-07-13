@@ -19,6 +19,11 @@ public class GameController : MonoBehaviour
     //[SerializeField] private TextMeshProUGUI txtScore;
     //int playerScore = 0;
     // Start is called before the first frame update
+
+    int index = -1;
+    List<int> Scores = new List<int>();
+    List<string> Names = new List<string>();
+
     void Start()
     {
         //txtScore.text = " x" + playerScore;
@@ -58,16 +63,43 @@ public class GameController : MonoBehaviour
             case 2: //check point
                 tuParlante.PlayOneShot(checkPointSound);
                 break;
-            case 3: //Saw
+            case 3: //Win
+                tuParlante.PlayOneShot(sawSound);
+                break;
+            case 4: //Saw
                 tuParlante.PlayOneShot(sawSound);
                 break;
 
         }
     }
 
-    //public void UpdateScore()
-    //{
-    //    playerScore++;
-    //    txtScore.text = " x" + playerScore;
-    //}
+    public void End(int points, string name)
+    {
+        index++;
+        Scores.Add(points);
+        Names.Add(name);
+        print("Scores index " + index + ": " + points + " Player: " + name); //photon name
+
+        if(index >= 2)
+        {
+            if(Scores[1] > Scores[2]) //gano Jugador 1
+            {
+                print("gano Jugador 1");
+                GameObject.Find("Player 1").GetComponent<PlayerController>().PlayerWON();
+                GameObject.Find("Player 2").GetComponent<PlayerController>().PlayerLOSE();
+            }
+            else if (Scores[1] < Scores[2]) //gano Jugador 2
+            {
+                print("gano Jugador 2");
+                GameObject.Find("Player 2").GetComponent<PlayerController>().PlayerWON();
+                GameObject.Find("Player 1").GetComponent<PlayerController>().PlayerLOSE();
+            }
+            else //empate
+            {
+                print("Empate");
+                GameObject.Find("Player 1").GetComponent<PlayerController>().PlayerTIE();
+                GameObject.Find("Player 2").GetComponent<PlayerController>().PlayerTIE();
+            }
+        }
+    }
 }
