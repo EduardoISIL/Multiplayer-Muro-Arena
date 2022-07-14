@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using TMPro;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviourPunCallbacks
 {
@@ -24,7 +25,8 @@ public class PlayerController : MonoBehaviourPunCallbacks
     int playerScore = 0;
 
     private TextMeshProUGUI txtResultGame;
-    private GameObject imgResult;
+    private GameObject imgGOResult;
+    private Image imgResult;
 
     //Position
     Vector3 posSaved;
@@ -36,17 +38,24 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        //txtScore = GameObject.Find("txt Score").GetComponent<TextMeshProUGUI>();
+        
         var lista_textos = FindObjectsOfType<TextMeshProUGUI>();
-        txtScore = lista_textos[1];
+        print("lista_textos: " + lista_textos.Length);
+        for (int i = 0; i < lista_textos.Length; i++)
+        {
+            print("name text " + i + ": " + lista_textos[i].name);
+        }
+        //txtScore = lista_textos[1];
+        txtScore = GameObject.Find("txt Score").GetComponent<TextMeshProUGUI>();
         txtScore.text = " x" + playerScore;
 
-        txtResultGame = lista_textos[2];
+        //txtResultGame = lista_textos[2];
+        txtResultGame = GameObject.Find("txt End").GetComponent<TextMeshProUGUI>();
         txtResultGame.text = "";
-        imgResult = txtResultGame.transform.parent.gameObject;
-        imgResult.SetActive(false);
+        imgGOResult = txtResultGame.transform.parent.gameObject;
+        imgResult = imgGOResult.gameObject.GetComponent<Image>();
+        imgResult.color = new Color32(255, 255, 255, 0);
 
-        
 
         _transform = GetComponent<Transform>();
         if (GameObject.Find("Player 1")) _transform.name = "Player 2";
@@ -108,10 +117,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
             {
                 playerScore += 5;
                 txtScore.text = " x " + playerScore;
-                GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlaySound(3);
-                GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().End(playerScore, PhotonNetwork.LocalPlayer.NickName);
+                //GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlaySound(3);
+                //GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().End(playerScore, PhotonNetwork.LocalPlayer.NickName);
+                //Destroy(collision.gameObject);
             }
-            Destroy(collision.gameObject);
         }
         if (collision.gameObject.tag == "Platform")
         {
@@ -125,32 +134,27 @@ public class PlayerController : MonoBehaviourPunCallbacks
             this.transform.parent = null;
         }
     }
-    public void SavePosition(Vector3 thisPos)
+    public void SavePosition(Vector3 thisPos) => posSaved = thisPos;
+    public void UpdatePosition() => this.transform.position = posSaved;
+    public void StopMoving() => canMove = 0;
+
+    public void SendScore()
     {
-        print("Se activo el SavePosition");
-        posSaved = thisPos;
-    }
-    public void UpdatePosition()
-    {
-        this.transform.position = posSaved;
-    }
-    public void StopMoving()
-    {
-        canMove = 0;
+        GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().End(playerScore, PhotonNetwork.LocalPlayer.NickName);
     }
     public void PlayerWON()
     {
-        imgResult.SetActive(true);
+        imgResult.color = new Color32(0, 0, 0, 100);
         txtResultGame.text = "Congratulations you WON!";
     }
     public void PlayerLOSE()
     {
-        imgResult.SetActive(true);
+        imgResult.color = new Color32(0, 0, 0, 100);
         txtResultGame.text = "Eliminated";
     }
     public void PlayerTIE()
     {
-        imgResult.SetActive(true);
+        imgResult.color = new Color32(0, 0, 0, 100);
         txtResultGame.text = "Tie!";
     }
 }

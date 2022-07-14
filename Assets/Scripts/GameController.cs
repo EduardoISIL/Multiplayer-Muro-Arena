@@ -20,7 +20,7 @@ public class GameController : MonoBehaviour
     //int playerScore = 0;
     // Start is called before the first frame update
 
-    int index = -1;
+    int index = 0;
     List<int> Scores = new List<int>();
     List<string> Names = new List<string>();
 
@@ -82,13 +82,13 @@ public class GameController : MonoBehaviour
 
         if(index >= 2)
         {
-            if(Scores[1] > Scores[2]) //gano Jugador 1
+            if (Scores[0] > Scores[1]) //gano Jugador 1
             {
                 print("gano Jugador 1");
                 GameObject.Find("Player 1").GetComponent<PlayerController>().PlayerWON();
                 GameObject.Find("Player 2").GetComponent<PlayerController>().PlayerLOSE();
             }
-            else if (Scores[1] < Scores[2]) //gano Jugador 2
+            else if (Scores[0] < Scores[1]) //gano Jugador 2
             {
                 print("gano Jugador 2");
                 GameObject.Find("Player 2").GetComponent<PlayerController>().PlayerWON();
@@ -101,5 +101,6 @@ public class GameController : MonoBehaviour
                 GameObject.Find("Player 2").GetComponent<PlayerController>().PlayerTIE();
             }
         }
+
     }
 }
