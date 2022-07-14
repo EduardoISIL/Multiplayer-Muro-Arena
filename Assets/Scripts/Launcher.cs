@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
@@ -7,11 +7,14 @@ using UnityEngine.SceneManagement;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
-
     // Menu
     [SerializeField] private GameObject loadingPnl;
     private bool menuState = false;
     private bool playPressed = false;
+    [SerializeField] private RectTransform sidePnl = null;
+    [SerializeField] private GameObject optionsPnl = null;
+    [SerializeField] private GameObject creditsPnl = null;
+    [SerializeField] private Vector2 wide;
 
     // Lobby
     [SerializeField] private Sprite[] playerSkins;
@@ -53,6 +56,8 @@ public class Launcher : MonoBehaviourPunCallbacks
         if (loadingPnl != null)
         {
             loadingPnl.SetActive(false); // Al conectar con el servidor se retira la pantalla de LOADING...
+            GameObject.Find("SoundManager").GetComponent<MusicManager>().menuSound = false;
+            GameObject.Find("Cinematic").GetComponent<CinematicControl>().inMenu = false;
         }
     }
 
@@ -72,6 +77,31 @@ public class Launcher : MonoBehaviourPunCallbacks
 
                     skinsCount = playerSkins.Length;
                     tempValue = 0;
+
+                    if (GameObject.Find("Play") != null)
+                    {
+                        GameObject.Find("Play").GetComponent<Button>().onClick.AddListener(Play);
+                    }
+
+                    if (GameObject.Find("Options") != null)
+                    {
+                        GameObject.Find("Options").GetComponent<Button>().onClick.AddListener(OptionsShow);
+                    }
+
+                    if (GameObject.Find("Credits") != null)
+                    {
+                        GameObject.Find("Credits").GetComponent<Button>().onClick.AddListener(CreditsShow);
+                    }
+
+                    if (GameObject.Find("hidePnl") != null)
+                    {
+                        GameObject.Find("hidePnl").GetComponent<Button>().onClick.AddListener(Hide);
+                    }
+
+                    if (GameObject.Find("Quit") != null)
+                    {
+                        GameObject.Find("Quit").GetComponent<Button>().onClick.AddListener(QuitGame);
+                    }
                 }
 
                 if (isBack == true)
@@ -79,13 +109,51 @@ public class Launcher : MonoBehaviourPunCallbacks
                     lobbyState = false;
                     playPressed = false;
                     loadingPnl = GameObject.Find("LoadingPnl");
+
                     if (loadingPnl != null)
                     {
                         loadingPnl.SetActive(false);
+                        GameObject.Find("SoundManager").GetComponent<MusicManager>().menuSound = false;
                     }
+
+                    if (optionsPnl == null)
+                    {
+                        optionsPnl = GameObject.Find("OptionsPnl");
+                    }
+
+                    if (creditsPnl == null)
+                    {
+                        creditsPnl = GameObject.Find("CreditsPnl");
+                    }
+
+                    if (sidePnl == null)
+                    {
+                        sidePnl = GameObject.Find("SidePnl").GetComponent<RectTransform>();
+                    }
+
                     if (GameObject.Find("Play") != null)
                     {
                         GameObject.Find("Play").GetComponent<Button>().onClick.AddListener(Play);
+                    }
+
+                    if (GameObject.Find("Options") != null)
+                    {
+                        GameObject.Find("Options").GetComponent<Button>().onClick.AddListener(OptionsShow);
+                    }
+
+                    if (GameObject.Find("Credits") != null)
+                    {
+                        GameObject.Find("Credits").GetComponent<Button>().onClick.AddListener(CreditsShow);
+                    }
+
+                    if (GameObject.Find("hidePnl") != null)
+                    {
+                        GameObject.Find("hidePnl").GetComponent<Button>().onClick.AddListener(Hide);
+                    }
+
+                    if (GameObject.Find("Quit") != null)
+                    {
+                        GameObject.Find("Quit").GetComponent<Button>().onClick.AddListener(QuitGame);
                     }
                 }
 
@@ -179,21 +247,23 @@ public class Launcher : MonoBehaviourPunCallbacks
         cam.LookOutForThePlayer();
     }
 
-    // Botón de Menú
+    // BotÃ³n de MenÃº
     public void Play()
     {
         if (playPressed == false)
         {
+            BtnSfx();
             playPressed = true;
             SceneManager.LoadScene(1);
         }
     }
 
-    // Botón de Lobby
+    // BotÃ³n de Lobby
     public void StartGame()
     {
         if (startPressed == false)
         {
+            BtnSfx();
             GameObject.Find("loadingTxt").GetComponent<Text>().text = "Loading...";
             startPressed = true;
             backBtn.SetActive(false);
@@ -205,9 +275,11 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         if (backPressed == false)
         {
+            BtnSfx();
             GameObject.Find("loadingTxt").GetComponent<Text>().text = "Loading...";
             backPressed = true;
             isBack = true;
+            GameObject.Find("SoundManager").GetComponent<MusicManager>().menuSound = true;
             PhotonNetwork.LeaveLobby();
             SceneManager.LoadScene(0);
         }
@@ -218,6 +290,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         if (tempValue < skinsCount - 1)
         {
+            BtnSfx();
             tempValue++;
             print(tempValue);
         }
@@ -231,5 +304,59 @@ public class Launcher : MonoBehaviourPunCallbacks
             print(tempValue);
         }
     }
+
+    public void BtnSfx()
+    {
+        GameObject.Find("SoundManager").GetComponent<MusicManager>().ButtonSFX();
+    }
+
+    public void Show()
+    {
+        StopAllCoroutines();
+        StartCoroutine(MoveLeft(wide, 1f));
+    }
+
+    private IEnumerator MoveLeft(Vector2 target, float duration)
+    {
+        float current = 0;
+        Vector2 originalRT = sidePnl.anchoredPosition;
+
+        while (current < duration)
+        {
+            sidePnl.anchoredPosition = Vector2.Lerp(originalRT, target, current / duration);
+            current += Time.deltaTime;
+            yield return null;
+        }
+
+        sidePnl.anchoredPosition = target;
+        yield return null;
+    }
+
+    public void Hide()
+    {
+        StopAllCoroutines();
+        StartCoroutine(MoveLeft(wide * -5, 1f));
+    }
+
+    public void OptionsShow()
+    {
+        optionsPnl.SetActive(true);
+        creditsPnl.SetActive(false);
+        Show();
+    }
+
+    public void CreditsShow()
+    {
+        optionsPnl.SetActive(false);
+        creditsPnl.SetActive(true);
+        Show();
+    }
+
+    public void QuitGame()
+    {
+        print("Se cierra el juego");
+        Application.Quit();
+    }
+
 }
 
