@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Photon.Realtime;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
@@ -11,6 +12,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject loadingPnl;
     private bool menuState = false;
     private bool playPressed = false;
+    private bool connectState = false;
     [SerializeField] private RectTransform sidePnl = null;
     [SerializeField] private GameObject optionsPnl = null;
     [SerializeField] private GameObject creditsPnl = null;
@@ -22,6 +24,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     private int tempValue = 0;
     private int skinsCount = 0;
     private bool lobbyState = false;
+    private bool joinState = false;
     //private bool levelState = false; HABILITAR CUANDO SE PUEDA REGRESAR AL MENU
     private bool startPressed = false;
     private bool backPressed = false;
@@ -34,6 +37,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] private PhotonView playerPref1;
     [SerializeField] private CameraFollower cam;
     [SerializeField] private Transform SpawnDefault;
+    private bool roomState = false;
 
     // Propiedad DON'T DESTROY ON LOAD
     public static Launcher launcherStatic; //comparte esta variable con todas las escenas
@@ -73,7 +77,12 @@ public class Launcher : MonoBehaviourPunCallbacks
                     lobbyState = false;
                     playPressed = false;
                     menuState = true;
-                    PhotonNetwork.ConnectUsingSettings();
+
+                    if (connectState == false)
+                    {
+                        PhotonNetwork.ConnectUsingSettings();
+                        connectState = true;
+                    }
 
                     skinsCount = playerSkins.Length;
                     tempValue = 0;
@@ -170,8 +179,12 @@ public class Launcher : MonoBehaviourPunCallbacks
                     backPressed = false;
                     lobbyState = true;
 
-                    PhotonNetwork.JoinLobby();
-                    backBtn = GameObject.Find("BackBtn").gameObject;
+                    if (joinState == false)
+                    {
+                        PhotonNetwork.JoinLobby();
+                    }
+
+                    backBtn = GameObject.Find("BackBtn");
 
                     tempValue = 0;
 
@@ -214,9 +227,17 @@ public class Launcher : MonoBehaviourPunCallbacks
 
                 if (inGame == false)
                 {
+                    if (roomState == false)
+                    {
+                        RoomOptions options = new RoomOptions();
+                        options.MaxPlayers = 10;
+                        PhotonNetwork.JoinOrCreateRoom("room", options, TypedLobby.Default);
+                        roomState = true;
+                    }
+
+
                     inGame = true;
                     print("Nivel 1 Case");
-                    PhotonNetwork.JoinRandomOrCreateRoom();
                     //levelState = true; HABILITAR CUANDO SE PUEDA REGRESAR AL MENU
                     SpawnDefault = GameObject.Find("SpawnPosition").transform;
                     cam = GameObject.Find("Main Camera").GetComponent<CameraFollower>();
