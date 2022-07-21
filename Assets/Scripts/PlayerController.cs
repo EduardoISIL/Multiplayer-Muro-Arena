@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     //Position
     Vector3 posSaved;
+
     private void Awake()
     {
         rgbd2D = GetComponent<Rigidbody2D>();
@@ -40,11 +41,6 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         
         var lista_textos = FindObjectsOfType<TextMeshProUGUI>();
-        print("lista_textos: " + lista_textos.Length);
-        for (int i = 0; i < lista_textos.Length; i++)
-        {
-            print("name text " + i + ": " + lista_textos[i].name);
-        }
         //txtScore = lista_textos[1];
         txtScore = GameObject.Find("txt Score").GetComponent<TextMeshProUGUI>();
         txtScore.text = " x" + playerScore;
@@ -63,8 +59,14 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
         posSaved = GameObject.Find("SpawnPosition").transform.position;
 
-        PhotonNetwork.LocalPlayer.NickName = "Player " + PhotonNetwork.LocalPlayer.ActorNumber;
-        this.transform.name = "Player " + PhotonNetwork.LocalPlayer.ActorNumber;
+        //PhotonNetwork.LocalPlayer.NickName = "Player " + PhotonNetwork.LocalPlayer.ActorNumber;
+        if (photonView.IsMine)
+        {
+            string idText = "" + PhotonNetwork.LocalPlayer.UserId;
+            string idText4 = idText.Substring(0, 4);
+            this.transform.name = "Player " + idText4;
+        }
+
     }
     void Update()
     {
@@ -124,7 +126,10 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
         if (collision.gameObject.tag == "Platform")
         {
-            this.transform.parent = collision.transform;
+            if (photonView.IsMine)
+            {
+                this.transform.parent = collision.transform;
+            }
         }
     }
     private void OnCollisionExit2D(Collision2D collision)
@@ -137,11 +142,32 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public void SavePosition(Vector3 thisPos) => posSaved = thisPos;
     public void UpdatePosition() => this.transform.position = posSaved;
     public void StopMoving() => canMove = 0;
-
     public void SendScore()
     {
-        GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().End(playerScore, PhotonNetwork.LocalPlayer.NickName);
+        //GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().End(playerScore, PhotonNetwork.LocalPlayer.UserId);
+        GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().End(playerScore, this.transform.name);
+
     }
+    public void RecieveScore(int value1, int value2)
+    {
+        print("value1: " + value1 + " value2: " + value2);
+        print("playerScore" + playerScore);
+
+        if (playerScore == value1) // se esta leyendo a si mismo
+        {
+            // esta leyendo al enemigo
+            if (playerScore <= value1) PlayerLOSE();
+            else if (playerScore >= value1) PlayerWON();
+            else PlayerTIE();
+        }
+        else if (playerScore == value2) // se esta leyendo a si mismo
+        {
+            if (playerScore <= value2) PlayerLOSE();
+            else if (playerScore >= value2) PlayerWON();
+            else PlayerTIE();
+        }
+    }
+
     public void PlayerWON()
     {
         imgResult.color = new Color32(0, 0, 0, 100);

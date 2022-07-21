@@ -4,7 +4,9 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
 
-public class GameController : MonoBehaviour
+using Photon.Pun;
+
+public class GameController : MonoBehaviourPunCallbacks
 {
     [SerializeField] private AudioClip coinSound;
     [SerializeField] private AudioClip checkPointSound;
@@ -21,8 +23,8 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
 
     int index = 0;
-    List<int> Scores = new List<int>();
-    List<string> Names = new List<string>();
+    List<int> Scores = new List<int>(2);
+    List<string> Names = new List<string>(2);
 
     void Start()
     {
@@ -82,24 +84,29 @@ public class GameController : MonoBehaviour
 
         if(index >= 2)
         {
-            if (Scores[0] > Scores[1]) //gano Jugador 1
+            var lista_players = FindObjectsOfType<PlayerController>();
+            for (int i = 0; i < lista_players.Length; i++)
             {
-                print("gano Jugador 1");
-                GameObject.Find("Player 1").GetComponent<PlayerController>().PlayerWON();
-                GameObject.Find("Player 2").GetComponent<PlayerController>().PlayerLOSE();
+                lista_players[i].RecieveScore(Scores[0], Scores[1]);
             }
-            else if (Scores[0] < Scores[1]) //gano Jugador 2
-            {
-                print("gano Jugador 2");
-                GameObject.Find("Player 2").GetComponent<PlayerController>().PlayerWON();
-                GameObject.Find("Player 1").GetComponent<PlayerController>().PlayerLOSE();
-            }
-            else //empate
-            {
-                print("Empate");
-                GameObject.Find("Player 1").GetComponent<PlayerController>().PlayerTIE();
-                GameObject.Find("Player 2").GetComponent<PlayerController>().PlayerTIE();
-            }
+            //if (Scores[0] > Scores[1]) //gano Jugador 1
+            //{
+            //    print("gano Jugador 1");
+            //    GameObject.Find(Names[0]).GetComponent<PlayerController>().PlayerWON();
+            //    GameObject.Find(Names[1]).GetComponent<PlayerController>().PlayerLOSE();
+            //}
+            //else if (Scores[0] < Scores[1]) //gano Jugador 2
+            //{
+            //    print("gano Jugador 2");
+            //    GameObject.Find(Names[1]).GetComponent<PlayerController>().PlayerWON();
+            //    GameObject.Find(Names[0]).GetComponent<PlayerController>().PlayerLOSE();
+            //}
+            //else //empate
+            //{
+            //    print("Empate");
+            //    GameObject.Find(Names[0]).GetComponent<PlayerController>().PlayerTIE();
+            //    GameObject.Find(Names[1]).GetComponent<PlayerController>().PlayerTIE();
+            //}
         }
 
     }

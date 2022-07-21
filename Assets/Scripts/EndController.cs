@@ -9,11 +9,13 @@ public class EndController : MonoBehaviour
         if (collision.gameObject.tag == "Player")
         {
             GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlaySound(3);
+            
             var lista_players = FindObjectsOfType<PlayerController>();
             for (int i = 0; i < lista_players.Length; i++)
             {
                 lista_players[i].SendScore();
             }
+
             Destroy(gameObject);
         }
     }
