@@ -13,7 +13,7 @@ public class EndController : MonoBehaviour
             var lista_players = FindObjectsOfType<PlayerController>();
             for (int i = 0; i < lista_players.Length; i++)
             {
-                lista_players[i].SendScore();
+                lista_players[i].CallRemoteMethod();
             }
 
             Destroy(gameObject);

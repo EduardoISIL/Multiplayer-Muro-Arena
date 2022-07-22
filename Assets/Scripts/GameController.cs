@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 
 using Photon.Pun;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviourPunCallbacks
 {
@@ -26,11 +27,24 @@ public class GameController : MonoBehaviourPunCallbacks
     List<int> Scores = new List<int>(2);
     List<string> Names = new List<string>(2);
 
+    private TextMeshProUGUI txtResultGame;
+    private GameObject imgGOResult;
+    private Image imgResult;
+
     void Start()
     {
         //txtScore.text = " x" + playerScore;
         RelojCounterHUD.text = "" + RelojGame;
         InvokeRepeating("ReduceValue", 0, 1);
+        //photonView.RPC("End", RpcTarget.AllBufferedViaServer);
+
+        txtResultGame = GameObject.Find("txt End").GetComponent<TextMeshProUGUI>();
+        txtResultGame.text = "";
+        imgGOResult = txtResultGame.transform.parent.gameObject;
+        imgResult = imgGOResult.gameObject.GetComponent<Image>();
+        imgResult.color = new Color32(255, 255, 255, 0);
+
+
     }
     public void ReduceValue()
     {
@@ -44,17 +58,8 @@ public class GameController : MonoBehaviourPunCallbacks
             isGameOver = true;
             RelojGame = 0;
             print("Fin del juego");
-            //StartCoroutine(gameOver("GameOverJ"));
-            //SceneManager.LoadScene("GameOverJ");
         }
     }
-    //IEnumerator gameOver(string name)
-    //{
-    //    print("Se inicio Co-rutina Game Over");
-    //    yield return new WaitForSeconds(1);
-    //    SceneManager.LoadScene(name);
-    //}
-
     public void PlaySound(int index)
     {
         switch(index)
@@ -75,38 +80,46 @@ public class GameController : MonoBehaviourPunCallbacks
         }
     }
 
+
+    
     public void End(int points, string name)
     {
+        CancelInvoke();
         index++;
+        print("index: " + index);
         Scores.Add(points);
         Names.Add(name);
-        print("Scores index " + index + ": " + points + " Player: " + name); //photon name
+        string winner = "";
 
         if(index >= 2)
         {
-            var lista_players = FindObjectsOfType<PlayerController>();
-            for (int i = 0; i < lista_players.Length; i++)
+            print("Scores index " + 1 + ": " + Scores[0] + " Player: " + Names[0]); //photon name
+            print("Scores index " + 2 + ": " + Scores[1] + " Player: " + Names[1]); //photon name
+            if (Scores[0] > Scores[1]) //gano Jugador 1
             {
-                lista_players[i].RecieveScore(Scores[0], Scores[1]);
+                print("gano Jugador 1");
+                winner = Names[0];
+                //GameObject.Find(Names[0]).GetComponent<PlayerController>().PlayerWON();
+                //GameObject.Find(Names[1]).GetComponent<PlayerController>().PlayerLOSE();
             }
-            //if (Scores[0] > Scores[1]) //gano Jugador 1
-            //{
-            //    print("gano Jugador 1");
-            //    GameObject.Find(Names[0]).GetComponent<PlayerController>().PlayerWON();
-            //    GameObject.Find(Names[1]).GetComponent<PlayerController>().PlayerLOSE();
-            //}
-            //else if (Scores[0] < Scores[1]) //gano Jugador 2
-            //{
-            //    print("gano Jugador 2");
-            //    GameObject.Find(Names[1]).GetComponent<PlayerController>().PlayerWON();
-            //    GameObject.Find(Names[0]).GetComponent<PlayerController>().PlayerLOSE();
-            //}
-            //else //empate
-            //{
-            //    print("Empate");
-            //    GameObject.Find(Names[0]).GetComponent<PlayerController>().PlayerTIE();
-            //    GameObject.Find(Names[1]).GetComponent<PlayerController>().PlayerTIE();
-            //}
+            else if (Scores[0] < Scores[1]) //gano Jugador 2
+            {
+                print("gano Jugador 2");
+                winner = Names[1];
+                //GameObject.Find(Names[1]).GetComponent<PlayerController>().PlayerWON();
+                //GameObject.Find(Names[0]).GetComponent<PlayerController>().PlayerLOSE();
+            }
+            else //empate
+            {
+                print("Empate");
+                winner = "Both players!";
+                //GameObject.Find(Names[0]).GetComponent<PlayerController>().PlayerTIE();
+                //GameObject.Find(Names[1]).GetComponent<PlayerController>().PlayerTIE();
+            }
+            imgResult.color = new Color32(0, 0, 0, 100);
+            txtResultGame.text = "Resultados: \n " + "El jugador: " + Names[0] + " tuvo " + Scores[0] + " pts \n"
+                                                   + "El jugador: " + Names[1] + " tuvo " + Scores[1] + " pts \n"
+                                                   + "Winner is " + winner;
         }
 
     }

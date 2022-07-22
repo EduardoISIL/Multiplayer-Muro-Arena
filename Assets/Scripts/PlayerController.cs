@@ -22,11 +22,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     //new
     private TextMeshProUGUI txtScore;
-    int playerScore = 0;
-
-    private TextMeshProUGUI txtResultGame;
-    private GameObject imgGOResult;
-    private Image imgResult;
+    [HideInInspector] public static int playerScore = 0;
 
     //Position
     Vector3 posSaved;
@@ -39,23 +35,13 @@ public class PlayerController : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        
         var lista_textos = FindObjectsOfType<TextMeshProUGUI>();
-        //txtScore = lista_textos[1];
         txtScore = GameObject.Find("txt Score").GetComponent<TextMeshProUGUI>();
         txtScore.text = " x" + playerScore;
 
-        //txtResultGame = lista_textos[2];
-        txtResultGame = GameObject.Find("txt End").GetComponent<TextMeshProUGUI>();
-        txtResultGame.text = "";
-        imgGOResult = txtResultGame.transform.parent.gameObject;
-        imgResult = imgGOResult.gameObject.GetComponent<Image>();
-        imgResult.color = new Color32(255, 255, 255, 0);
-
-
         _transform = GetComponent<Transform>();
-        if (GameObject.Find("Player 1")) _transform.name = "Player 2";
-        else if (GameObject.Find("Player(Clone)")) _transform.name = "Player 1";
+        //if (GameObject.Find("Player 1")) _transform.name = "Player 2";
+        //else if (GameObject.Find("Player(Clone)")) _transform.name = "Player 1";
 
         posSaved = GameObject.Find("SpawnPosition").transform.position;
 
@@ -68,13 +54,14 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
 
     }
+
     void Update()
     {
         if (photonView.IsMine)
         {
-            if(Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                if(isGrounded) Jumping(); //
+                if (isGrounded) Jumping(); //
             }
             float X = Input.GetAxisRaw("Horizontal");
             float Y = Input.GetAxisRaw("Vertical");
@@ -84,6 +71,12 @@ public class PlayerController : MonoBehaviourPunCallbacks
         }
 
     }
+
+    /* //public void OnPhotonInstantiate(Photon.Pun.PhotonMessageInfo info)
+     //{
+     //    Debug.Log("Is this mine?... " + info.Sender.IsLocal.ToString());
+     //}*/
+
     public void Jumping()
     {
         rgbd2D.velocity = Vector2.up * Jump;
@@ -98,7 +91,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
         {
             if (photonView.IsMine)
             {
-                playerScore +=1;
+                playerScore += 1;
                 txtScore.text = " x " + playerScore;
                 GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().PlaySound(1);
             }
@@ -142,46 +135,64 @@ public class PlayerController : MonoBehaviourPunCallbacks
     public void SavePosition(Vector3 thisPos) => posSaved = thisPos;
     public void UpdatePosition() => this.transform.position = posSaved;
     public void StopMoving() => canMove = 0;
-    public void SendScore()
-    {
-        //GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().End(playerScore, PhotonNetwork.LocalPlayer.UserId);
-        GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().End(playerScore, this.transform.name);
 
+    public void CallRemoteMethod()
+    {
+        GetComponent<PhotonView>().RPC(
+            "SendScore",
+            RpcTarget.Others, playerScore, this.transform.name);
     }
-    public void RecieveScore(int value1, int value2)
-    {
-        print("value1: " + value1 + " value2: " + value2);
-        print("playerScore" + playerScore);
 
-        if (playerScore == value1) // se esta leyendo a si mismo
+    [PunRPC]
+    public void SendScore(int PlayerScore, string name)
+    {
+        if (photonView.IsMine)
         {
-            // esta leyendo al enemigo
-            if (playerScore <= value1) PlayerLOSE();
-            else if (playerScore >= value1) PlayerWON();
-            else PlayerTIE();
-        }
-        else if (playerScore == value2) // se esta leyendo a si mismo
-        {
-            if (playerScore <= value2) PlayerLOSE();
-            else if (playerScore >= value2) PlayerWON();
-            else PlayerTIE();
+            //var hash = PhotonNetwork.LocalPlayer.CustomProperties;
+            //hash.Add(this.transform.name, playerScore);
+            //PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+            //if (!PhotonNetwork.IsMasterClient) return;
+            //Debug.Log(PhotonNetwork.LocalPlayer.ToStringFull());
+            GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().End(PlayerScore, name);
         }
     }
+    /* public void RecieveScore(int value1, int value2)
+     {
+         print("value1: " + value1 + " value2: " + value2);
+         print("playerScore" + playerScore);
 
-    public void PlayerWON()
-    {
-        imgResult.color = new Color32(0, 0, 0, 100);
-        txtResultGame.text = "Congratulations you WON!";
-    }
-    public void PlayerLOSE()
-    {
-        imgResult.color = new Color32(0, 0, 0, 100);
-        txtResultGame.text = "Eliminated";
-    }
-    public void PlayerTIE()
-    {
-        imgResult.color = new Color32(0, 0, 0, 100);
-        txtResultGame.text = "Tie!";
-    }
+         if (playerScore == value1) // se esta leyendo a si mismo
+         {
+             // esta leyendo al enemigo
+             if (playerScore <= value1) PlayerLOSE();
+             else if (playerScore >= value1) PlayerWON();
+             else PlayerTIE();
+         }
+         else if (playerScore == value2) // se esta leyendo a si mismo
+         {
+             if (playerScore <= value2) PlayerLOSE();
+             else if (playerScore >= value2) PlayerWON();
+             else PlayerTIE();
+         }
+     }
+    */
+    /* public void PlayerWON()
+     {
+         print("Se activo PlayerWON");
+         imgResult.color = new Color32(0, 0, 0, 100);
+         txtResultGame.text = "Congratulations you WON!";
+     }
+     public void PlayerLOSE()
+     {
+         print("Se activo PlayerLOSE");
+         imgResult.color = new Color32(0, 0, 0, 100);
+         txtResultGame.text = "Eliminated";
+     }
+     public void PlayerTIE()
+     {
+         print("Se activo PlayerTIE");
+         imgResult.color = new Color32(0, 0, 0, 100);
+         txtResultGame.text = "Tie!";
+     }*/
 }
 
