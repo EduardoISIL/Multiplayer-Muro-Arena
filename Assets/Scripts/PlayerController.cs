@@ -46,11 +46,13 @@ public class PlayerController : MonoBehaviourPunCallbacks
         posSaved = GameObject.Find("SpawnPosition").transform.position;
 
         //PhotonNetwork.LocalPlayer.NickName = "Player " + PhotonNetwork.LocalPlayer.ActorNumber;
+        this.transform.name = "Player " + "2";
         if (photonView.IsMine)
         {
             string idText = "" + PhotonNetwork.LocalPlayer.UserId;
             string idText4 = idText.Substring(0, 4);
-            this.transform.name = "Player " + idText4;
+            //this.transform.name = "Player " + idText4;
+            this.transform.name = "Player " + 1;
         }
 
     }
@@ -140,7 +142,7 @@ public class PlayerController : MonoBehaviourPunCallbacks
     {
         GetComponent<PhotonView>().RPC(
             "SendScore",
-            RpcTarget.Others, playerScore, this.transform.name);
+            RpcTarget.All, playerScore, this.transform.name);
     }
 
     [PunRPC]
