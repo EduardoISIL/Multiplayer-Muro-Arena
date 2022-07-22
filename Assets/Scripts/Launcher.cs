@@ -17,6 +17,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject optionsPnl = null;
     [SerializeField] private GameObject creditsPnl = null;
     [SerializeField] private Vector2 wide;
+    //-------------------------------------------------------------------------------
 
     // Lobby
     [SerializeField] private Sprite[] playerSkins;
@@ -24,13 +25,13 @@ public class Launcher : MonoBehaviourPunCallbacks
     private int tempValue = 0;
     private int skinsCount = 0;
     private bool lobbyState = false;
-    private bool joinState = false;
-    //private bool levelState = false; HABILITAR CUANDO SE PUEDA REGRESAR AL MENU
+    protected private bool joinState = false;
     private bool startPressed = false;
     private bool backPressed = false;
     private bool isBack = false;
     private GameObject backBtn = null;
     [SerializeField] private RuntimeAnimatorController[] animController;
+    //-------------------------------------------------------------------------------
 
     // Nivel 1
     private bool inGame = false;
@@ -38,6 +39,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] private CameraFollower cam;
     [SerializeField] private Transform SpawnDefault;
     private bool roomState = false;
+    //-------------------------------------------------------------------------------
 
     // Propiedad DON'T DESTROY ON LOAD
     public static Launcher launcherStatic; //comparte esta variable con todas las escenas
@@ -54,16 +56,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     }
     //---------------------
 
-    public override void OnConnectedToMaster()
-    {
-        print("Conectado con exito al servidor"); 
-        if (loadingPnl != null)
-        {
-            loadingPnl.SetActive(false); // Al conectar con el servidor se retira la pantalla de LOADING...
-            GameObject.Find("SoundManager").GetComponent<MusicManager>().menuSound = false;
-            GameObject.Find("Cinematic").GetComponent<CinematicControl>().inMenu = false;
-        }
-    }
+    
 
     private void Update()
     {
@@ -235,7 +228,6 @@ public class Launcher : MonoBehaviourPunCallbacks
                         roomState = true;
                     }
 
-
                     inGame = true;
                     print("Nivel 1 Case");
                     //levelState = true; HABILITAR CUANDO SE PUEDA REGRESAR AL MENU
@@ -245,6 +237,17 @@ public class Launcher : MonoBehaviourPunCallbacks
                 }
 
                 break;
+        }
+    }
+
+    public override void OnConnectedToMaster()
+    {
+        print("Conectado con exito al servidor");
+        if (loadingPnl != null)
+        {
+            loadingPnl.SetActive(false); // Al conectar con el servidor se retira la pantalla de LOADING...
+            GameObject.Find("SoundManager").GetComponent<MusicManager>().menuSound = false;
+            GameObject.Find("Cinematic").GetComponent<CinematicControl>().inMenu = false;
         }
     }
 
@@ -262,7 +265,6 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
     }
 
-    // Por DEFINIR
     public void LookAtForPLayer()
     {
         cam.LookOutForThePlayer();
@@ -276,6 +278,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             BtnSfx();
             playPressed = true;
             SceneManager.LoadScene(1);
+            GameObject.Find("SoundManager").GetComponent<MusicManager>().lobbySound = false;
         }
     }
 
@@ -292,6 +295,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
     }
 
+    // Volver al menu
     public void BackMenu()
     {
         if (backPressed == false)
@@ -300,8 +304,7 @@ public class Launcher : MonoBehaviourPunCallbacks
             GameObject.Find("loadingTxt").GetComponent<Text>().text = "Loading...";
             backPressed = true;
             isBack = true;
-            GameObject.Find("SoundManager").GetComponent<MusicManager>().menuSound = true;
-            PhotonNetwork.LeaveLobby();
+            GameObject.Find("SoundManager").GetComponent<MusicManager>().menuSound = false;
             SceneManager.LoadScene(0);
         }
     }

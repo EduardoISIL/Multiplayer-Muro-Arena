@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MusicManager : MonoBehaviour
 {
@@ -9,9 +10,12 @@ public class MusicManager : MonoBehaviour
     [SerializeField] private AudioClip[] musicClips = null;
     [SerializeField] private AudioClip btnSFX = null;
     public bool menuSound = true;
-    private bool lobbySound = false;
+    public bool lobbySound = false;
     private bool nivel1Sound = false;
-    
+
+    // Options
+    [SerializeField] private Slider volInput;
+
     // Propiedad DON'T DESTROY ON LOAD
     public static MusicManager musicMngStatic; //comparte esta variable con todas las escenas
 
@@ -41,7 +45,14 @@ public class MusicManager : MonoBehaviour
                     managerSource.Stop();
                     managerSource.clip = musicClips[0];
                     managerSource.Play();
+                    volInput = GameObject.Find("musicSld").GetComponent<Slider>();
                 }
+
+                if (volInput != null)
+                {
+                    managerSource.volume = volInput.value;
+                }
+
                 break;
 
             case "Lobby":
