@@ -23,6 +23,9 @@ public class PlayerController : MonoBehaviourPunCallbacks
     //new
     private TextMeshProUGUI txtScore;
     [HideInInspector] public static int playerScore = 0;
+    [HideInInspector] public static string idText = "";
+
+    public PhotonView pv;
 
     //Position
     Vector3 posSaved;
@@ -46,13 +49,18 @@ public class PlayerController : MonoBehaviourPunCallbacks
         posSaved = GameObject.Find("SpawnPosition").transform.position;
 
         //PhotonNetwork.LocalPlayer.NickName = "Player " + PhotonNetwork.LocalPlayer.ActorNumber;
-        this.transform.name = "Player " + "2";
+        //PhotonNetwork.NickName = "Player " + PhotonNetwork.LocalPlayer.ActorNumber;
         if (photonView.IsMine)
         {
-            string idText = "" + PhotonNetwork.LocalPlayer.UserId;
+            idText = "" + PhotonNetwork.LocalPlayer.UserId;
             string idText4 = idText.Substring(0, 4);
-            //this.transform.name = "Player " + idText4;
-            this.transform.name = "Player " + 1;
+            this.transform.name = "Player " + idText4;
+            PhotonNetwork.LocalPlayer.NickName = "Player " + idText4;
+            PhotonNetwork.NickName = "Player " + idText4;
+        }
+        else
+        {
+            idText = pv.Owner.NickName;
         }
 
     }
